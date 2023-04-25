@@ -38,8 +38,8 @@ class PromptEncoder(nn.Module):
         """
         super().__init__()
         self.embed_dim = embed_dim
-        self.input_image_size = input_image_size
-        self.image_embedding_size = image_embedding_size
+        self.input_image_size = input_image_size  # 1024 768
+        self.image_embedding_size = image_embedding_size  # 48
         self.pe_layer = PositionEmbeddingRandom(embed_dim // 2)
 
         self.num_point_embeddings: int = 4  # pos/neg point + 2 box corners
@@ -164,7 +164,7 @@ class PromptEncoder(nn.Module):
             dense_embeddings = self.no_mask_embed.weight.reshape(1, -1, 1, 1).expand(
                 bs, -1, self.image_embedding_size[0], self.image_embedding_size[1]
             )
-
+        # print(sparse_embeddings.size())
         return sparse_embeddings, dense_embeddings
 
 

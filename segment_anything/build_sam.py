@@ -38,7 +38,7 @@ def build_sam_vit_l(checkpoint=None):
 
 def build_sam_vit_b(checkpoint=None):
     return _build_sam(
-        encoder_embed_dim=96, #768,
+        encoder_embed_dim=768, #768,
         encoder_depth=12,
         encoder_num_heads=12,
         encoder_global_attn_indexes=[2, 5, 8, 11],
@@ -61,8 +61,8 @@ def _build_sam(
     encoder_global_attn_indexes,
     checkpoint=None,
 ):
-    prompt_embed_dim = 32 #256
-    image_size = 512 #1024
+    prompt_embed_dim = 256 #256
+    image_size = 1024  #1024 1792
     vit_patch_size = 16
     image_embedding_size = image_size // vit_patch_size
     sam = Sam(
@@ -91,7 +91,7 @@ def _build_sam(
             transformer=TwoWayTransformer(
                 depth=2,
                 embedding_dim=prompt_embed_dim,
-                mlp_dim=256, #2048,
+                mlp_dim=2048, #2048,
                 num_heads=8,
             ),
             transformer_dim=prompt_embed_dim,
