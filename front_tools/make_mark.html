@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Image Marker</title>
+</head>
+<body>
+  <input type="file" id="image-file-input">
+  <canvas id="image-canvas"></canvas>
+  <button id="complete-button">完成</button>
+
+  <script>
+    const canvas = document.getElementById('image-canvas');
+    const ctx = canvas.getContext('2d');
+    let imageData;
+    let points = [];
+
+    document.getElementById('image-file-input').addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        };
+        img.src = reader.result;
+      };
+    });
+
+    canvas.addEventListener('mousedown', (event) => {
+      if (event.button === 0) { // Left click
+        const x = event.offsetX;
+        const y = event.offsetY;
+        drawPoint(x, y);
+        points.push([x, y]);
+      } else if (event.button === 2) { // Right click
+        const x = event.offsetX;
+        const y = event.offsetY;
+        removePoint(x, y);
+      }
+    });
+
+    function drawPoint(x, y) {
+      ctx.fillStyle = '#ff0000';
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+
+    function removePoint(x, y) {
+      for (let i = 0; i < points.length; i++) {
+        const pointX = points[i][0];
+        const pointY = points[i][1];
+        if (x >= pointX - 5 && x <= pointX + 5 && y >= pointY - 5 && y <= pointY + 5) {
+          points.splice(i, 1);
+          redrawPoints();
+          break;
+        }
+      }
+    }
+
+    function redrawPoints() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.putImageData(imageData, 0, 0);
+      for (let i = 0; i < points.length; i++) {
+        const pointX = points[i][0];
+        const pointY = points[i][1];
+        drawPoint(pointX, pointY);
+      }
+    }
+
+    document.getElementById('complete-button').addEventListener('click', () => {
+      const filename = document.getElementById('image-file-input').files[0].name.replace(/\.[^/.]+$/, '') + '.json';
+      const content = JSON.stringify(points);
+      const blob = new Blob([content], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
