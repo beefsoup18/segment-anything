@@ -14,6 +14,19 @@ from typing import Optional, Tuple
 from .utils.transforms import ResizeLongestSide
 
 
+def set_prompt(
+    prompt: list,
+) -> [np.array, np.array]:
+    """
+    set prompt
+    """
+    assert type(prompt) is list, "prompt must in form of list"
+    assert len(prompt[0]) == 3, f"prompt must has 3 elem while %s" % str(prompt[0])
+    input_point = np.array([[x[0], x[1]] for x in prompt])
+    input_label = np.array([x[2] for x in prompt])
+    return input_point, input_label
+
+
 class SamPredictor:
     def __init__(
         self,

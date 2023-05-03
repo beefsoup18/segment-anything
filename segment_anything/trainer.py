@@ -83,7 +83,7 @@ class SamTrainer:
         self.features = self.model.image_encoder(input_image)
         self.is_image_set = True
 
-    def predict(
+    def train(
         self,
         point_coords: Optional[np.ndarray] = None,
         point_labels: Optional[np.ndarray] = None,
